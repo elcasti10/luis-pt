@@ -356,7 +356,8 @@ select option{background:var(--surface2);}
           <select id="f-package">
             <option>1:1 Essentials — $520/mo</option>
             <option>1:1 Premium — $780/mo</option>
-            <option>1:2 Partner — $560/person/mo</option>
+            <option>1:2 Essentials — $380/person ($760 total)/mo</option>
+            <option>1:2 Premium — $560/person ($1,120 total)/mo</option>
           </select>
         </div>
         <div class="form-group"><label>Start date</label><input id="f-start" type="date"></div>
@@ -503,13 +504,15 @@ function pkgPrice(pkg) {
   if(pkg.includes('780')) return 780;
   if(pkg.includes('520')) return 520;
   if(pkg.includes('560')) return 560;
+  if(pkg.includes('380')) return 380;
   return 0;
 }
 
 function pkgBadge(pkg) {
-  if(pkg.includes('Premium')) return '<span class="badge badge-gold">1:1 Premium</span>';
-  if(pkg.includes('Essentials')) return '<span class="badge badge-blue">1:1 Essentials</span>';
-  if(pkg.includes('Partner')) return '<span class="badge badge-green">1:2 Partner</span>';
+  if(pkg.includes('1:1 Premium')) return '<span class="badge badge-gold">1:1 Premium</span>';
+  if(pkg.includes('1:1 Essentials')) return '<span class="badge badge-blue">1:1 Essentials</span>';
+  if(pkg.includes('1:2 Premium')) return '<span class="badge badge-green">1:2 Premium</span>';
+  if(pkg.includes('1:2 Essentials')) return '<span class="badge badge-green">1:2 Essentials</span>';
   return pkg;
 }
 
