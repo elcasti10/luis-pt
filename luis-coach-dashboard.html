@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luis · Coach Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0F0F1A;
+  --surface:#1A1A2E;
+  --surface2:#22223A;
+  --border:#2E2E4A;
+  --accent:#E8B84B;
+  --accent-dim:#3A3010;
+  --text:#F0EEE8;
+  --text2:#9090A8;
+  --text3:#5A5A78;
+  --green:#4CAF7D;
+  --green-dim:#0D2E1A;
+  --red:#E85B4B;
+  --red-dim:#2E0D0A;
+  --blue:#4B8CE8;
+  --blue-dim:#0D1E3A;
+  --radius:10px;
+  --radius-lg:16px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 0;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.sidebar-brand h1{font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;color:var(--text);line-height:1.2;}
+.sidebar-brand p{font-size:11px;color:var(--text3);margin-top:3px;letter-spacing:0.05em;}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:0 1.5rem;margin:1rem 0 0.4rem;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1.5rem;font-size:13px;color:var(--text2);cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
+.nav-icon{width:16px;height:16px;opacity:0.7;flex-shrink:0;}
+.nav-item.active .nav-icon{opacity:1;}
+.sidebar-footer{margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.sidebar-footer p{font-size:11px;color:var(--text3);}
+.sidebar-footer strong{color:var(--accent);}
+
+/* MAIN */
+.main{overflow-y:auto;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+.topbar-title{font-size:1rem;font-weight:500;color:var(--text);}
+.topbar-date{font-size:12px;color:var(--text3);}
+.btn{border:none;border-radius:var(--radius);padding:0.5rem 1rem;font-size:13px;font-weight:500;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:#1A1200;}
+.btn-primary:hover{background:#F0C85B;}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3);}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid transparent;}
+.btn-danger:hover{border-color:var(--red);}
+.btn-sm{padding:0.3rem 0.7rem;font-size:12px;}
+
+/* CONTENT */
+.content{padding:2rem;}
+
+/* STATS ROW */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;}
+.stat-value{font-size:1.8rem;font-weight:600;color:var(--text);line-height:1;}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+.stat-card.accent .stat-value{color:var(--accent);}
+.stat-card.green .stat-value{color:var(--green);}
+
+/* CLIENTS TABLE */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.section-title{font-size:0.9rem;font-weight:500;color:var(--text);}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);padding:0.75rem 1rem;text-align:left;}
+td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.client-name{font-weight:500;color:var(--text);}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-gold{background:var(--accent-dim);color:var(--accent);}
+.badge-blue{background:var(--blue-dim);color:var(--blue);}
+.badge-green{background:var(--green-dim);color:var(--green);}
+.badge-red{background:var(--red-dim);color:var(--red);}
+.action-btns{display:flex;gap:6px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-size:1rem;font-weight:500;}
+.modal-close{background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer;padding:0.25rem;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:1.5rem;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 0.75rem;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:100%;transition:border-color 0.15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+textarea{resize:vertical;min-height:80px;}
+select option{background:var(--surface2);}
+
+/* CLIENT DETAIL VIEW */
+.detail-grid{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;}
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.detail-card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:1rem;}
+.info-row{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);font-size:13px;}
+.info-row:last-child{border-bottom:none;}
+.info-row .lbl{color:var(--text3);}
+.info-row .val{color:var(--text);font-weight:500;text-align:right;}
+.checkin-item{padding:0.75rem;background:var(--surface2);border-radius:var(--radius);margin-bottom:0.5rem;}
+.checkin-date{font-size:11px;color:var(--text3);margin-bottom:4px;}
+.checkin-note{font-size:13px;color:var(--text);line-height:1.5;}
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.75rem;background:var(--surface2);border-radius:var(--radius);margin-bottom:0.4rem;}
+.session-date{font-size:12px;color:var(--text3);}
+.session-status{font-size:11px;}
+.payment-row{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.75rem;background:var(--surface2);border-radius:var(--radius);margin-bottom:0.4rem;}
+.payment-amount{font-weight:600;color:var(--green);}
+.workout-entry{padding:0.75rem;background:var(--surface2);border-radius:var(--radius);margin-bottom:0.5rem;}
+.workout-date{font-size:11px;color:var(--text3);margin-bottom:4px;}
+.workout-text{font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:var(--surface2);padding:4px;border-radius:var(--radius);width:fit-content;}
+.tab{padding:0.4rem 0.9rem;border-radius:6px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;transition:all 0.15s;}
+.tab.active{background:var(--surface);color:var(--text);}
+
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text3);font-size:13px;margin-bottom:1.5rem;cursor:pointer;background:none;border:none;padding:0;}
+.back-btn:hover{color:var(--text);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:3rem;color:var(--text3);}
+.empty p{margin-bottom:1rem;}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* REVENUE */
+.revenue-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Luis Felipe<br><em>Castillo</em></h1>
+      <p>Coach Dashboard</p>
+    </div>
+    <span class="nav-label">Menu</span>
+    <div class="nav-item active" onclick="showPage('overview')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" onclick="showPage('clients')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clients
+    </div>
+    <div class="nav-item" onclick="showPage('payments')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Payments
+    </div>
+    <div class="sidebar-footer">
+      <p>Spots: <strong id="spots-left">4</strong> / 4 available</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="page-title">Overview</span>
+      <span class="topbar-date" id="today-date"></span>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW PAGE -->
+      <div class="page active" id="page-overview">
+        <div class="stats-grid">
+          <div class="stat-card accent">
+            <div class="stat-label">Active clients</div>
+            <div class="stat-value" id="stat-clients">0</div>
+            <div class="stat-sub">of 4 spots filled</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Monthly revenue</div>
+            <div class="stat-value" id="stat-revenue">$0</div>
+            <div class="stat-sub">recurring</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sessions this week</div>
+            <div class="stat-value" id="stat-sessions">0</div>
+            <div class="stat-sub">logged</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Payments due</div>
+            <div class="stat-value" id="stat-due">0</div>
+            <div class="stat-sub">this month</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span class="section-title">Client roster</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddClient()">+ Add client</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Package</th><th>Since</th><th>Payment</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="overview-table"><tr><td colspan="5" class="empty">No clients yet — add your first one!</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CLIENTS PAGE -->
+      <div class="page" id="page-clients">
+        <div class="section-header">
+          <span class="section-title">All clients</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddClient()">+ Add client</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Package</th><th>Phone</th><th>Since</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="clients-table"><tr><td colspan="6" class="empty">No clients yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CLIENT DETAIL PAGE -->
+      <div class="page" id="page-detail">
+        <button class="back-btn" onclick="showPage('clients')">← Back to clients</button>
+        <div class="section-header">
+          <span class="section-title" id="detail-name">Client</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="openEditClient()">Edit info</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCurrentClient()">Remove client</button>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div>
+            <div class="detail-card" style="margin-bottom:1rem;">
+              <div class="detail-card-title">Client info</div>
+              <div id="detail-info"></div>
+            </div>
+          </div>
+          <div>
+            <div class="tabs">
+              <button class="tab active" onclick="switchTab('checkins')">Check-ins</button>
+              <button class="tab" onclick="switchTab('sessions')">Sessions</button>
+              <button class="tab" onclick="switchTab('workouts')">Programming</button>
+              <button class="tab" onclick="switchTab('payments')">Payments</button>
+            </div>
+
+            <!-- CHECK-INS -->
+            <div id="tab-checkins">
+              <div class="section-header">
+                <span class="section-title">Weekly check-ins</span>
+                <button class="btn btn-primary btn-sm" onclick="openAddCheckin()">+ Add check-in</button>
+              </div>
+              <div id="checkin-list"></div>
+            </div>
+
+            <!-- SESSIONS -->
+            <div id="tab-sessions" style="display:none;">
+              <div class="section-header">
+                <span class="section-title">Session attendance</span>
+                <button class="btn btn-primary btn-sm" onclick="openAddSession()">+ Log session</button>
+              </div>
+              <div id="session-list"></div>
+            </div>
+
+            <!-- WORKOUTS -->
+            <div id="tab-workouts" style="display:none;">
+              <div class="section-header">
+                <span class="section-title">Programming log</span>
+                <button class="btn btn-primary btn-sm" onclick="openAddWorkout()">+ Add program</button>
+              </div>
+              <div id="workout-list"></div>
+            </div>
+
+            <!-- PAYMENTS -->
+            <div id="tab-payments" style="display:none;">
+              <div class="section-header">
+                <span class="section-title">Payment history</span>
+                <button class="btn btn-primary btn-sm" onclick="openAddPayment()">+ Log payment</button>
+              </div>
+              <div id="payment-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS PAGE -->
+      <div class="page" id="page-payments">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card green">
+            <div class="stat-label">Total collected</div>
+            <div class="stat-value" id="pay-total">$0</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-label">Monthly recurring</div>
+            <div class="stat-value" id="pay-monthly">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Payments logged</div>
+            <div class="stat-value" id="pay-count">0</div>
+          </div>
+        </div>
+        <div class="section-header"><span class="section-title">All payments</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Client</th><th>Amount</th><th>Date</th><th>Note</th></tr></thead>
+            <tbody id="all-payments-table"><tr><td colspan="4" class="empty">No payments logged yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT CLIENT MODAL -->
+<div class="modal-overlay hidden" id="modal-client">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-client-title">Add new client</span>
+      <button class="modal-close" onclick="closeModal('modal-client')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Full name</label><input id="f-name" placeholder="e.g. Sarah Johnson"></div>
+        <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="+61 4XX XXX XXX"></div>
+        <div class="form-group"><label>Email</label><input id="f-email" placeholder="email@example.com"></div>
+        <div class="form-group"><label>Package</label>
+          <select id="f-package">
+            <option>1:1 Essentials — $520/mo</option>
+            <option>1:1 Premium — $780/mo</option>
+            <option>1:2 Partner — $560/person/mo</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Start date</label><input id="f-start" type="date"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="f-status">
+            <option>Active</option>
+            <option>Paused</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Notes</label><textarea id="f-notes" placeholder="Goals, injuries, anything important..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-client')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CHECK-IN MODAL -->
+<div class="modal-overlay hidden" id="modal-checkin">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Weekly check-in</span>
+      <button class="modal-close" onclick="closeModal('modal-checkin')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Date</label><input id="ci-date" type="date"></div>
+        <div class="form-group"><label>Energy (1–5)</label><input id="ci-energy" type="number" min="1" max="5" placeholder="3"></div>
+        <div class="form-group full"><label>Notes / how they're feeling</label><textarea id="ci-notes" placeholder="e.g. Feeling stronger, sleep improved, knee still tight..."></textarea></div>
+        <div class="form-group full"><label>Goals for next week</label><textarea id="ci-goals" placeholder="e.g. Hit 3 sessions, increase protein..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-checkin')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCheckin()">Save check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SESSION MODAL -->
+<div class="modal-overlay hidden" id="modal-session">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Log session</span>
+      <button class="modal-close" onclick="closeModal('modal-session')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Date</label><input id="s-date" type="date"></div>
+        <div class="form-group"><label>Type</label>
+          <select id="s-type"><option>In-person</option><option>Online</option><option>Solo (programmed)</option></select>
+        </div>
+        <div class="form-group"><label>Attendance</label>
+          <select id="s-attendance"><option>Attended</option><option>No show</option><option>Late cancel</option></select>
+        </div>
+        <div class="form-group full"><label>Session notes</label><textarea id="s-notes" placeholder="What you worked on, PRs, observations..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-session')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSession()">Log session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD WORKOUT MODAL -->
+<div class="modal-overlay hidden" id="modal-workout">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add programming</span>
+      <button class="modal-close" onclick="closeModal('modal-workout')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Week of</label><input id="w-date" type="date"></div>
+        <div class="form-group"><label>Type</label>
+          <select id="w-type"><option>Weekly program</option><option>Solo day A</option><option>Solo day B</option><option>Deload week</option></select>
+        </div>
+        <div class="form-group full"><label>Program details</label><textarea id="w-notes" placeholder="e.g. Day 1: Squat 4x5 @75%, RDL 3x8, Pull-ups 3x max..." style="min-height:140px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-workout')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWorkout()">Save program</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PAYMENT MODAL -->
+<div class="modal-overlay hidden" id="modal-payment">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Log payment</span>
+      <button class="modal-close" onclick="closeModal('modal-payment')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Amount ($)</label><input id="p-amount" type="number" placeholder="780"></div>
+        <div class="form-group"><label>Date received</label><input id="p-date" type="date"></div>
+        <div class="form-group full"><label>Note</label><input id="p-note" placeholder="e.g. March payment, first month..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePayment()">Log payment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATA
+let data = JSON.parse(localStorage.getItem('luis-coach') || '{"clients":[]}');
+let currentClientId = null;
+let editingClientId = null;
+
+function save() { localStorage.setItem('luis-coach', JSON.stringify(data)); }
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// DATE
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// PAGES
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const titles = {overview:'Overview',clients:'Clients',detail:'Client detail',payments:'Payments'};
+  document.getElementById('page-title').textContent = titles[name] || name;
+  const navMap = {overview:'overview',clients:'clients',detail:'clients',payments:'payments'};
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+navMap[name]+"'")) n.classList.add('active');
+  });
+  if(name === 'overview') renderOverview();
+  if(name === 'clients') renderClients();
+  if(name === 'payments') renderPayments();
+}
+
+// PACKAGE PRICE MAP
+function pkgPrice(pkg) {
+  if(pkg.includes('780')) return 780;
+  if(pkg.includes('520')) return 520;
+  if(pkg.includes('560')) return 560;
+  return 0;
+}
+
+function pkgBadge(pkg) {
+  if(pkg.includes('Premium')) return '<span class="badge badge-gold">1:1 Premium</span>';
+  if(pkg.includes('Essentials')) return '<span class="badge badge-blue">1:1 Essentials</span>';
+  if(pkg.includes('Partner')) return '<span class="badge badge-green">1:2 Partner</span>';
+  return pkg;
+}
+
+function statusBadge(s) {
+  if(s==='Active') return '<span class="badge badge-green">Active</span>';
+  if(s==='Paused') return '<span class="badge badge-gold">Paused</span>';
+  return '<span class="badge badge-red">Cancelled</span>';
+}
+
+// STATS
+function calcStats() {
+  const active = data.clients.filter(c => c.status === 'Active');
+  const revenue = active.reduce((s,c) => s + pkgPrice(c.package), 0);
+  const allPayments = data.clients.flatMap(c => (c.payments||[]).filter(p => {
+    const d = new Date(p.date); const n = new Date();
+    return d >= new Date(n.getFullYear(), n.getMonth(), 1);
+  }));
+  const allSessions = data.clients.flatMap(c => (c.sessions||[]).filter(s => {
+    const d = new Date(s.date); const n = new Date();
+    const wStart = new Date(n); wStart.setDate(n.getDate() - n.getDay());
+    return d >= wStart;
+  }));
+  return { active: active.length, revenue, sessions: allSessions.length, due: active.length };
+}
+
+// RENDER OVERVIEW
+function renderOverview() {
+  const st = calcStats();
+  document.getElementById('stat-clients').textContent = st.active;
+  document.getElementById('stat-revenue').textContent = '$' + st.revenue.toLocaleString();
+  document.getElementById('stat-sessions').textContent = st.sessions;
+  document.getElementById('stat-due').textContent = st.due;
+  document.getElementById('spots-left').textContent = Math.max(0, 4 - st.active);
+  const tbody = document.getElementById('overview-table');
+  if(!data.clients.length) { tbody.innerHTML = '<tr><td colspan="5" style="padding:2rem;text-align:center;color:var(--text3);">No clients yet — add your first one!</td></tr>'; return; }
+  tbody.innerHTML = data.clients.map(c => `
+    <tr>
+      <td><span class="client-name">${c.name}</span></td>
+      <td>${pkgBadge(c.package)}</td>
+      <td>${c.start ? new Date(c.start).toLocaleDateString('en-AU') : '—'}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div class="action-btns">
+        <button class="btn btn-ghost btn-sm" onclick="viewClient('${c.id}')">View</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// RENDER CLIENTS
+function renderClients() {
+  const tbody = document.getElementById('clients-table');
+  if(!data.clients.length) { tbody.innerHTML = '<tr><td colspan="6" style="padding:2rem;text-align:center;color:var(--text3);">No clients yet.</td></tr>'; return; }
+  tbody.innerHTML = data.clients.map(c => `
+    <tr>
+      <td><span class="client-name">${c.name}</span></td>
+      <td>${pkgBadge(c.package)}</td>
+      <td>${c.phone || '—'}</td>
+      <td>${c.start ? new Date(c.start).toLocaleDateString('en-AU') : '—'}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div class="action-btns">
+        <button class="btn btn-ghost btn-sm" onclick="viewClient('${c.id}')">View</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// VIEW CLIENT
+function viewClient(id) {
+  currentClientId = id;
+  const c = data.clients.find(x => x.id === id);
+  document.getElementById('detail-name').textContent = c.name;
+  document.getElementById('detail-info').innerHTML = `
+    <div class="info-row"><span class="lbl">Package</span><span class="val">${c.package.split('—')[0].trim()}</span></div>
+    <div class="info-row"><span class="lbl">Price</span><span class="val" style="color:var(--green);">$${pkgPrice(c.package)}/mo</span></div>
+    <div class="info-row"><span class="lbl">Status</span><span class="val">${c.status}</span></div>
+    <div class="info-row"><span class="lbl">Phone</span><span class="val">${c.phone||'—'}</span></div>
+    <div class="info-row"><span class="lbl">Email</span><span class="val">${c.email||'—'}</span></div>
+    <div class="info-row"><span class="lbl">Started</span><span class="val">${c.start ? new Date(c.start).toLocaleDateString('en-AU') : '—'}</span></div>
+    ${c.notes ? `<div class="info-row" style="flex-direction:column;gap:4px;"><span class="lbl">Notes</span><span style="color:var(--text2);font-size:12px;line-height:1.5;">${c.notes}</span></div>` : ''}
+  `;
+  switchTab('checkins');
+  showPage('detail');
+}
+
+// TABS
+function switchTab(name) {
+  ['checkins','sessions','workouts','payments'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['checkins','sessions','workouts','payments'][i] === name);
+  });
+  const c = data.clients.find(x => x.id === currentClientId);
+  if(!c) return;
+  if(name==='checkins') renderCheckins(c);
+  if(name==='sessions') renderSessions(c);
+  if(name==='workouts') renderWorkouts(c);
+  if(name==='payments') renderClientPayments(c);
+}
+
+function renderCheckins(c) {
+  const list = document.getElementById('checkin-list');
+  if(!(c.checkins||[]).length) { list.innerHTML = '<div class="empty"><p>No check-ins logged yet.</p></div>'; return; }
+  list.innerHTML = [...c.checkins].reverse().map(ci => `
+    <div class="checkin-item">
+      <div class="checkin-date">${new Date(ci.date).toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'})} · Energy: ${ci.energy||'—'}/5</div>
+      <div class="checkin-note">${ci.notes||''}</div>
+      ${ci.goals ? `<div style="margin-top:6px;font-size:12px;color:var(--accent);">Next week: ${ci.goals}</div>` : ''}
+    </div>`).join('');
+}
+
+function renderSessions(c) {
+  const list = document.getElementById('session-list');
+  if(!(c.sessions||[]).length) { list.innerHTML = '<div class="empty"><p>No sessions logged yet.</p></div>'; return; }
+  list.innerHTML = [...c.sessions].reverse().map(s => `
+    <div class="session-row">
+      <div>
+        <div class="client-name" style="font-size:13px;">${s.type}</div>
+        <div class="session-date">${new Date(s.date).toLocaleDateString('en-AU')}</div>
+      </div>
+      <div>
+        <span class="badge ${s.attendance==='Attended'?'badge-green':s.attendance==='No show'?'badge-red':'badge-gold'}">${s.attendance}</span>
+      </div>
+    </div>
+    ${s.notes ? `<div style="font-size:12px;color:var(--text3);padding:0 0.5rem 0.5rem;line-height:1.5;">${s.notes}</div>` : ''}`).join('');
+}
+
+function renderWorkouts(c) {
+  const list = document.getElementById('workout-list');
+  if(!(c.workouts||[]).length) { list.innerHTML = '<div class="empty"><p>No programs logged yet.</p></div>'; return; }
+  list.innerHTML = [...c.workouts].reverse().map(w => `
+    <div class="workout-entry">
+      <div class="workout-date">${w.type} · Week of ${new Date(w.date).toLocaleDateString('en-AU')}</div>
+      <div class="workout-text">${w.notes}</div>
+    </div>`).join('');
+}
+
+function renderClientPayments(c) {
+  const list = document.getElementById('payment-list');
+  if(!(c.payments||[]).length) { list.innerHTML = '<div class="empty"><p>No payments logged yet.</p></div>'; return; }
+  const total = c.payments.reduce((s,p) => s + Number(p.amount), 0);
+  list.innerHTML = `<div style="margin-bottom:0.75rem;font-size:13px;color:var(--text3);">Total collected: <strong style="color:var(--green);">$${total.toLocaleString()}</strong></div>` +
+    [...c.payments].reverse().map(p => `
+    <div class="payment-row">
+      <div>
+        <div class="payment-amount">$${Number(p.amount).toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text3);">${p.note||''}</div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);">${new Date(p.date).toLocaleDateString('en-AU')}</div>
+    </div>`).join('');
+}
+
+// PAYMENTS PAGE
+function renderPayments() {
+  const allPayments = data.clients.flatMap(c => (c.payments||[]).map(p => ({...p, clientName:c.name})));
+  const total = allPayments.reduce((s,p) => s + Number(p.amount), 0);
+  const active = data.clients.filter(c=>c.status==='Active');
+  const monthly = active.reduce((s,c) => s + pkgPrice(c.package), 0);
+  document.getElementById('pay-total').textContent = '$' + total.toLocaleString();
+  document.getElementById('pay-monthly').textContent = '$' + monthly.toLocaleString();
+  document.getElementById('pay-count').textContent = allPayments.length;
+  const tbody = document.getElementById('all-payments-table');
+  if(!allPayments.length) { tbody.innerHTML = '<tr><td colspan="4" style="padding:2rem;text-align:center;color:var(--text3);">No payments logged yet.</td></tr>'; return; }
+  tbody.innerHTML = [...allPayments].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(p => `
+    <tr>
+      <td><span class="client-name">${p.clientName}</span></td>
+      <td style="color:var(--green);font-weight:600;">$${Number(p.amount).toLocaleString()}</td>
+      <td>${new Date(p.date).toLocaleDateString('en-AU')}</td>
+      <td style="color:var(--text3);">${p.note||'—'}</td>
+    </tr>`).join('');
+}
+
+// MODALS
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+// ADD CLIENT
+function openAddClient() {
+  editingClientId = null;
+  document.getElementById('modal-client-title').textContent = 'Add new client';
+  ['f-name','f-phone','f-email','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-package').value = '1:1 Essentials — $520/mo';
+  document.getElementById('f-status').value = 'Active';
+  document.getElementById('f-start').value = new Date().toISOString().split('T')[0];
+  openModal('modal-client');
+}
+
+function openEditClient() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  editingClientId = currentClientId;
+  document.getElementById('modal-client-title').textContent = 'Edit client';
+  document.getElementById('f-name').value = c.name;
+  document.getElementById('f-phone').value = c.phone||'';
+  document.getElementById('f-email').value = c.email||'';
+  document.getElementById('f-package').value = c.package;
+  document.getElementById('f-status').value = c.status;
+  document.getElementById('f-start').value = c.start||'';
+  document.getElementById('f-notes').value = c.notes||'';
+  openModal('modal-client');
+}
+
+function saveClient() {
+  const name = document.getElementById('f-name').value.trim();
+  if(!name) return alert('Please enter a name.');
+  if(editingClientId) {
+    const c = data.clients.find(x => x.id === editingClientId);
+    c.name = name; c.phone = document.getElementById('f-phone').value;
+    c.email = document.getElementById('f-email').value;
+    c.package = document.getElementById('f-package').value;
+    c.status = document.getElementById('f-status').value;
+    c.start = document.getElementById('f-start').value;
+    c.notes = document.getElementById('f-notes').value;
+    closeModal('modal-client'); save(); viewClient(editingClientId);
+  } else {
+    const c = {
+      id: uid(), name, phone: document.getElementById('f-phone').value,
+      email: document.getElementById('f-email').value,
+      package: document.getElementById('f-package').value,
+      status: document.getElementById('f-status').value,
+      start: document.getElementById('f-start').value,
+      notes: document.getElementById('f-notes').value,
+      checkins:[], sessions:[], workouts:[], payments:[]
+    };
+    data.clients.push(c); save(); closeModal('modal-client'); renderOverview();
+  }
+}
+
+function deleteCurrentClient() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  if(!confirm(`Remove ${c.name}? This cannot be undone.`)) return;
+  data.clients = data.clients.filter(x => x.id !== currentClientId);
+  save(); showPage('clients');
+}
+
+// CHECK-IN
+function openAddCheckin() {
+  document.getElementById('ci-date').value = new Date().toISOString().split('T')[0];
+  ['ci-energy','ci-notes','ci-goals'].forEach(id => document.getElementById(id).value = '');
+  openModal('modal-checkin');
+}
+function saveCheckin() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  c.checkins = c.checkins||[];
+  c.checkins.push({ date: document.getElementById('ci-date').value, energy: document.getElementById('ci-energy').value, notes: document.getElementById('ci-notes').value, goals: document.getElementById('ci-goals').value });
+  save(); closeModal('modal-checkin'); renderCheckins(c);
+}
+
+// SESSION
+function openAddSession() {
+  document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('s-notes').value = '';
+  openModal('modal-session');
+}
+function saveSession() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  c.sessions = c.sessions||[];
+  c.sessions.push({ date: document.getElementById('s-date').value, type: document.getElementById('s-type').value, attendance: document.getElementById('s-attendance').value, notes: document.getElementById('s-notes').value });
+  save(); closeModal('modal-session'); renderSessions(c);
+}
+
+// WORKOUT
+function openAddWorkout() {
+  document.getElementById('w-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('w-notes').value = '';
+  openModal('modal-workout');
+}
+function saveWorkout() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  c.workouts = c.workouts||[];
+  c.workouts.push({ date: document.getElementById('w-date').value, type: document.getElementById('w-type').value, notes: document.getElementById('w-notes').value });
+  save(); closeModal('modal-workout'); renderWorkouts(c);
+}
+
+// PAYMENT
+function openAddPayment() {
+  document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+  ['p-amount','p-note'].forEach(id => document.getElementById(id).value = '');
+  openModal('modal-payment');
+}
+function savePayment() {
+  const c = data.clients.find(x => x.id === currentClientId);
+  c.payments = c.payments||[];
+  c.payments.push({ date: document.getElementById('p-date').value, amount: document.getElementById('p-amount').value, note: document.getElementById('p-note').value });
+  save(); closeModal('modal-payment'); renderClientPayments(c);
+}
+
+// CLOSE MODALS ON OVERLAY CLICK
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.add('hidden'); }));
+
+// INIT
+renderOverview();
+</script>
+</body>
+</html>
